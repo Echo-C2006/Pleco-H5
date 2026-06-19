@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>它吃掉了整条河 - 生态入侵警示录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', 'Helvetica Neue', sans-serif;
+            overflow-x: auto;
+            overflow-y: hidden;
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            background-color: #0a2f2a;
+            scrollbar-width: thin;
+        }
+        body::-webkit-scrollbar {
+            height: 4px;
+            background: #1e4a3b;
+        }
+        body::-webkit-scrollbar-thumb {
+            background: #e0b85b;
+            border-radius: 4px;
+        }
+        .horizontal-scroll {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            width: fit-content;
+        }
+        .screen {
+            flex: 0 0 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(10, 47, 42, 0.85);
+            background-blend-mode: overlay;
+            color: #f0f3ea;
+            box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.55);
+            overflow: hidden;
+            padding: 16px 20px;
+        }
+        #screen0, #screen7 {
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            box-shadow: none;
+        }
+        .chapter-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border-left: 5px solid #e0b85b;
+            padding-left: 16px;
+            letter-spacing: 2px;
+            flex-shrink: 0;
+        }
+        .narration {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 14px;
+            border-radius: 24px;
+            margin: 8px 0;
+            backdrop-filter: blur(6px);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .sub {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        .interactive-area {
+            background: rgba(30,40,35,0.7);
+            border-radius: 28px;
+            padding: 10px;
+            margin: 8px 0;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .interactive-area:active {
+            transform: scale(0.98);
+        }
+        .clickable-img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            background-color: #1e3a33;
+            border-radius: 20px;
+            display: block;
+            margin: 0 auto;
+        }
+        .hot-spot {
+            cursor: pointer;
+            display: inline-block;
+            background: #e0b85b;
+            color: #1f3e35;
+            padding: 6px 16px;
+            border-radius: 40px;
+            margin: 6px 6px 0 0;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border: none;
+        }
+        .hot-spot:active {
+            transform: scale(0.96);
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+        .data-badge {
+            background: #000000aa;
+            border-radius: 28px;
+            padding: 6px 10px;
+            display: inline-block;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            margin: 4px 0;
+        }
+        footer {
+            font-size: 0.6rem;
+            text-align: center;
+            margin-top: 12px;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+        /* 第一幕全屏背景切换 */
+        .scene-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.3s ease;
+        }
+        .first-act-title {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            z-index: 25;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 6px black;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 40px;
+            border-left: 4px solid #e0b85b;
+        }
+        .overlay-content {
+            position: absolute;
+            bottom: 20%;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            text-align: center;
+            color: white;
+            border-radius: 20px;
+            margin: 0 20px;
+        }
+        /* 第五幕对比滑块 */
+        .compare-wrapper {
+            position: relative;
+            width: 100%;
+            user-select: none;
+            min-height: 130px;
+        }
+        .compare-img-base, .compare-img-overlay {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+        .compare-img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #e0b85b;
+            left: 50%;
+            cursor: ew-resize;
+            box-shadow: 0 0 0 1px #1e3a33;
+            z-index: 10;
+        }
+        .detail-btn {
+            background: #e0b85b;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #1f3e35;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .detail-btn:active {
+            transform: scale(0.96);
+        }
+        /* 第六幕卡片 */
+        .fort-item {
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .fort-item.unlocked {
+            background: linear-gradient(145deg, #e0b85b, #c99f42) !important;
+            color: #1f3e35 !important;
+            transform: scale(1.02) translateY(-4px);
+            border: 1px solid #ffde9e !important;
+            box-shadow: 0 15px 25px -10px rgba(224,184,91,0.6) !important;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: #1f3e35;
+            max-width: 85%;
+            width: 320px;
+            border-radius: 36px;
+            padding: 20px;
+            color: white;
+            text-align: left;
+            border: 1px solid #e0b85b;
+            max-height: 80vh;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        .close-modal {
+            background: #e0b85b;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 60px;
+            margin-top: 16px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .modal-content img {
+            max-width: 100%;
+            border-radius: 16px;
+            margin: 8px 0;
+        }
+        /* 音乐控制按钮（右上角） */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(224,184,91,0.5);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #e0b85b;
+            transition: all 0.2s;
+        }
+        .music-control:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+<div class="horizontal-scroll" id="scrollContainer">
+    <!-- ==================== 序幕 ==================== -->
+    <div class="screen" id="screen0" style="padding: 0; overflow: hidden; background: #000;">
+        <video id="prologueVideo" autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000;">
+            <source src="会动的鱼.mp4" type="video/mp4">
+        </video>
+        <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; padding: 20px 20px 40px 20px; box-sizing: border-box;">
+            <div class="chapter-title" style="border-left: none; border-bottom: 2px solid #e0b85b; display: inline-block; padding-bottom: 6px; margin: 0 auto; color: #000; text-shadow: 0 0 4px white, 0 0 2px white;">序幕 · 玻璃盒子的开端</div>
+            <div style="width: 100%; max-width: 90%; margin-bottom: 20px;">
+                <div class="narration" style="background: rgba(0,0,0,0.8); border-radius: 24px; padding: 12px 16px; margin-bottom: 12px; font-size: 1rem;">
+                    “我出生在一个玻璃盒子里。他们说我是'清道夫'，能吃掉所有脏东西。但我没想到，有一天我会被倒进一条河。<br>那条河，后来成了我的王国。”
+                </div>
+                <div class="sub" style="color: #ddd;">—— 清道夫的自白</div>
+            </div>
+        </div>
+        <footer style="position: absolute; bottom: 12px; left: 0; right: 0; color: #aaa; text-align: center; z-index: 3;">👈 左右滑动屏幕 ｜ 点击高亮按钮查看秘密数据</footer>
+    </div>
+
+    <!-- ==================== 第一幕（全屏背景图切换） ==================== -->
+    <div class="screen" id="screen1" style="padding: 0; overflow: hidden; background: #000;">
+        <div class="first-act-title">第一幕 · 入侵 · “我来了”</div>
+        <div id="firstActContainer" style="position: relative; width: 100%; height: 100%;">
+            <div class="scene-bg" data-scene="0" style="background-image: url('第一幕-1.jpg'); opacity: 1;"></div>
+            <div class="scene-bg" data-scene="1" style="background-image: url('第一幕-2.jpg'); opacity: 0;"></div>
+            <div class="scene-bg" data-scene="2" style="background-image: url('鱼.png'); opacity: 0;"></div>
+
+            <div class="overlay-content">
+                <div class="scene-narration" style="font-size: 1rem; margin-bottom: 12px;">“它们被装进恒温箱，跨越海洋，打着‘观赏鱼’的旗号入境。在海关的X光下，我和同伴们安静地蜷缩。”</div>
+                <div class="scene-data-badge" style="background: rgba(0,0,0,0.7); display: inline-block; padding: 6px 12px; border-radius: 40px; font-size: 0.75rem; margin-bottom: 12px;">🌍 全球观赏鱼贸易年交易额 >300亿美元 | 2000+种鱼类</div>
+                <div><button class="hot-spot scene-btn">📊 进口数据</button></div>
+            </div>
+
+            <div style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 30px; z-index: 20;">
+                <button id="firstPrevScene" style="background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; padding: 6px 16px; border-radius: 40px; cursor: pointer;">◀</button>
+                <div style="display: flex; gap: 12px;" id="firstDotContainer">
+                    <div class="first-dot active" data-dot="0" style="width: 8px; height: 8px; background: #e0b85b; border-radius: 50%; cursor: pointer;"></div>
+                    <div class="first-dot" data-dot="1" style="width: 8px; height: 8px; background: #aaa; border-radius: 50%; cursor: pointer;"></div>
+                    <div class="first-dot" data-dot="2" style="width: 8px; height: 8px; background: #aaa; border-radius: 50%; cursor: pointer;"></div>
+                </div>
+                <button id="firstNextScene" style="background: rgba(0,0,0,0.5); border: none; color: white; font-size: 1.5rem; padding: 6px 16px; border-radius: 40px; cursor: pointer;">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 第二幕 ==================== -->
+    <div class="screen" id="screen2">
+        <div class="chapter-title">第二幕 · 征服 · “这里没有对手”</div>
+        <div class="narration">“这里的水温刚好，食物满地，而且——没有天敌。他们嫌我丑，嫌我脏，但在我眼里，他们都是软骨头。”</div>
+        <div class="interactive-area">
+            <img class="clickable-img" src="清道夫.png" alt="清道夫" style="width:100%">
+        </div>
+        <div class="button-group" style="justify-content: center; gap: 16px;">
+            <button class="hot-spot" data-fight="armor">🛡️ 骨板防御</button>
+            <button class="hot-spot" data-fight="stomach">💨 胃部呼吸</button>
+            <button class="hot-spot" data-fight="breed">🥚 超强繁殖力</button>
+        </div>
+        <div class="stat-card" id="fightStats" style="text-align: center;">💡 点击上方按钮，查看清道夫的“战斗力参数”</div>
+        <footer>离水存活24h｜-28℃ 8小时不死｜单次产卵3000颗</footer>
+    </div>
+
+    <!-- ==================== 第三幕 ==================== -->
+    <div class="screen" id="screen3" style="background: radial-gradient(circle at 20% 30%, #0a2f2a, #051f1b); padding: 20px 20px 30px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div style="margin-bottom: 12px;">
+            <div class="chapter-title" style="font-size: 1.6rem; border-left: none; text-align: center; letter-spacing: 2px; background: linear-gradient(135deg, #e0b85b, #c99f42); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;">第三幕 · 坍塌</div>
+            <div style="width: 60px; height: 3px; background: #e0b85b; margin: 8px auto 0; border-radius: 2px;"></div>
+            <div style="text-align: center; font-size: 0.9rem; color: #d4bc7a; margin-top: 6px;">“河流正在死去”</div>
+        </div>
+        <div class="narration" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(224,184,91,0.3); border-radius: 32px; padding: 12px 18px; margin: 8px 0 12px; font-size: 0.95rem; font-weight: 400; line-height: 1.5; text-align: center;">
+            “我把水草啃光了，把鱼卵吃光了，把河岸钻出千疮百孔的巢穴，这条河越来越安静。<br>他们怪我，可……明明是你们把我放进来的。”
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; margin: 0; position: relative; min-height: 0;">
+            <div style="position: absolute; width: 100%; height: 100%; background: radial-gradient(circle, rgba(224,184,91,0.2) 0%, transparent 70%); border-radius: 40px; pointer-events: none;"></div>
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 36px; overflow: hidden; background: #0a1f1b; box-shadow: 0 25px 40px -15px black;">
+                <img src="清道夫入侵河流前后对比图.png" alt="河流前后对比" style="width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; border-radius: 36px;">
+            </div>
+        </div>
+        <div style="position: absolute; top: 50%; right: 80px; transform: translateY(-50%); z-index: 10;">
+            <button id="surveyBtn" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(224,184,91,0.7); border-radius: 48px; padding: 12px 20px; color: #e0b85b; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                📋 实地调研证据
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== 第四幕 ==================== -->
+    <div class="screen" id="screen4">
+        <div class="chapter-title">第四幕 · 绝望 · “人与鱼的拉锯战”</div>
+        <div class="narration">“他们开始恨我，一网一网地捞，一车一车地埋，但都没有用。他们想过吃我，可我全身是骨头，肚子里全是泥。他们说我是'生态死士'，杀不死，用不掉，甩不掉。”</div>
+        <div id="pileTrigger" style="margin: 8px 0; text-align: center; cursor: pointer;">
+            <img class="clickable-img" src="渔网.png" alt="渔网捕捞清道夫" style="width:100%; max-height: 400px; object-fit: contain; display: block; border-radius: 20px;">
+            <div style="margin-top: 6px;">🐟 点击图片查看“无用功”循环</div>
+        </div>
+        <div class="button-group" style="justify-content: center; margin-top: 4px;">
+            <button id="cookBtn" style="background: #e0b85b; color: #1f3e35; border: none; border-radius: 60px; padding: 14px 28px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">🍳 尝试烹饪？</button>
+        </div>
+    </div>
+
+    <!-- ==================== 第五幕 ==================== -->
+    <div class="screen" id="screen5" style="padding: 8px 12px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="chapter-title" style="font-size: 1.2rem; margin-bottom: 2px;">第五幕 · 叩问 · “那条河，还回得去吗？”</div>
+        <div class="narration" style="font-size: 0.75rem; padding: 4px 8px; margin: 2px 0;">“他们终于开始问：是鱼的问题，还是人的问题？每一年，都有像我一样的'异乡人'，被一双双不负责任的手，送进不属于它们的水域。”</div>
+        <div class="compare-slider-container" style="margin: 4px 0; background: #1e3a33; border-radius: 24px; padding: 4px; position: relative;">
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 15;">
+                <button id="fifthActInfoBtn" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(224,184,91,0.6); border-radius: 40px; padding: 8px 16px; color: #e0b85b; font-size: 0.85rem; font-weight: bold; cursor: pointer; white-space: normal; max-width: 180px; line-height: 1.3;">📌 点击查看我国外来物种入侵数据</button>
+            </div>
+            <div class="compare-wrapper" style="position: relative; width: 100%; user-select: none; min-height: 130px;">
+                <img class="compare-img-base" src="5.1%20外来入侵.png" alt="外来入侵" style="width: 100%; display: block; border-radius: 16px;">
+                <img class="compare-img-overlay" src="5.1%20河岸嬉戏.png" alt="健康河岸" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; border-radius: 16px; clip-path: inset(0 50% 0 0); pointer-events: none;">
+                <div class="slider-handle" style="position: absolute; top: 0; bottom: 0; width: 3px; background: #e0b85b; left: 50%; cursor: ew-resize; box-shadow: 0 0 0 1px #1e3a33; z-index: 10;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #e0b85b; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #1e3a33;">◀▶</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px; font-size: 0.6rem; color: #ccc;">
+                <span>🌿 曾经的河岸嬉戏</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span>⚠️ 异宠入侵之手</span>
+                    <button id="showMacroDataBtn" class="detail-btn">📊 详情</button>
+                </div>
+            </div>
+            <input type="range" min="0" max="100" value="50" class="compare-slider" style="width: 100%; margin-top: 2px;">
+        </div>
+        <div class="compact-data" style="background: #1f3e35cc; border-radius: 16px; padding: 4px 6px; margin: 2px 0; text-align: center; cursor: pointer;" id="bigNumTrigger">
+            <div style="font-size: 1.3rem; font-weight: bold; line-height: 1.1;">660+</div>
+            <div style="font-size: 0.6rem;">我国已确认外来入侵物种总数</div>
+            <div class="sub" style="font-size: 0.5rem;">⚠️ 点击查看详情</div>
+        </div>
+        <footer style="margin-top: 2px; font-size: 0.5rem;">“这不是我的战争。这是你们的。”</footer>
+    </div>
+
+    <!-- ==================== 第六幕 ==================== -->
+    <div class="screen" id="screen6" style="background: linear-gradient(145deg, #0a2f2a 0%, #041815 100%); padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="text-align: center; margin-bottom: 8px;">
+            <div class="chapter-title" style="display: inline-block; border-left: none; font-size: 1.6rem; background: linear-gradient(135deg, #ffffff, #e0b85b); -webkit-background-clip: text; background-clip: text; color: transparent;">第六幕 · 烽火</div>
+            <div style="width: 50px; height: 2px; background: #e0b85b; margin: 6px auto 8px; border-radius: 2px;"></div>
+            <div class="sub" style="font-size: 0.8rem; letter-spacing: 1px;">“每个人都是哨站”</div>
+        </div>
+        <div class="narration" style="background: rgba(0,0,0,0.45); backdrop-filter: blur(8px); border-radius: 40px; padding: 12px 16px; margin: 4px 0 12px; font-size: 0.85rem; text-align: center; max-width: 90%; align-self: center;">
+            “所以，在你看到我的故事时，战争还在继续。但这场战争不是没有终点，那个终点，不在渔网里，而在每一个做出不同选择的人手中。”
+        </div>
+        <div class="fort-grid" id="fortGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; max-width: 460px; margin: 12px auto; flex: 1; align-items: stretch;">
+            <div class="fort-item locked" data-fort="1" style="background: rgba(20, 40, 35, 0.85); backdrop-filter: blur(4px); border-radius: 36px; padding: 24px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; border: 1px solid rgba(224,184,91,0.3); box-shadow: 0 8px 18px rgba(0,0,0,0.2);">
+                <div style="font-size: 2.2rem; margin-bottom: 12px;">🚫</div>
+                <div style="font-weight: bold; font-size: 1.15rem;">哨站一</div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 8px;">不随意放生</div>
+            </div>
+            <div class="fort-item locked" data-fort="2" style="background: rgba(20, 40, 35, 0.85); backdrop-filter: blur(4px); border-radius: 36px; padding: 24px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; border: 1px solid rgba(224,184,91,0.3); box-shadow: 0 8px 18px rgba(0,0,0,0.2);">
+                <div style="font-size: 2.2rem; margin-bottom: 12px;">🛑</div>
+                <div style="font-weight: bold; font-size: 1.15rem;">哨站二</div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 8px;">不购买危险物种</div>
+            </div>
+            <div class="fort-item locked" data-fort="3" style="background: rgba(20, 40, 35, 0.85); backdrop-filter: blur(4px); border-radius: 36px; padding: 24px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; border: 1px solid rgba(224,184,91,0.3); box-shadow: 0 8px 18px rgba(0,0,0,0.2);">
+                <div style="font-size: 2.2rem; margin-bottom: 12px;">📢</div>
+                <div style="font-weight: bold; font-size: 1.15rem;">哨站三</div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 8px;">发现即报告</div>
+            </div>
+            <div class="fort-item locked" data-fort="4" style="background: rgba(20, 40, 35, 0.85); backdrop-filter: blur(4px); border-radius: 36px; padding: 24px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; border: 1px solid rgba(224,184,91,0.3); box-shadow: 0 8px 18px rgba(0,0,0,0.2);">
+                <div style="font-size: 2.2rem; margin-bottom: 12px;">🌍</div>
+                <div style="font-weight: bold; font-size: 1.15rem;">哨站四</div>
+                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 8px;">传播即守护</div>
+            </div>
+        </div>
+        <div id="fortMsg" class="sub" style="text-align: center; margin: 12px 0 8px; font-size: 0.75rem;">点击任意哨站，解锁防线数据</div>
+        <button id="generatePosterBtn" class="poster-btn" style="display:none; background: #e0b85b; border: none; padding: 12px 24px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; color: #1f3e35; width: auto; margin: 0 auto 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">✨ 生成生态哨兵专属海报 ✨</button>
+        <div id="posterResult" style="margin-top: 8px; text-align: center;"></div>
+        <footer style="margin-top: 8px; font-size: 0.55rem;">💪 每个人都是一道防线</footer>
+    </div>
+
+    <!-- ==================== 尾声 ==================== -->
+    <div class="screen" id="screen7" style="padding: 0; overflow: hidden; background: #000;">
+        <video autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #000;">
+            <source src="会动的鱼.mp4" type="video/mp4">
+        </video>
+        <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; padding: 20px 20px 40px 20px; box-sizing: border-box;">
+            <div class="chapter-title" style="border-left: none; border-bottom: 2px solid #e0b85b; display: inline-block; padding-bottom: 6px; margin: 0 auto; color: #000; text-shadow: 0 0 4px white, 0 0 2px white;">尾声 · 回响</div>
+            <div style="width: 100%; max-width: 90%; margin-bottom: 20px;">
+                <div class="narration" style="background: rgba(0,0,0,0.8); border-radius: 24px; padding: 16px 20px; margin-bottom: 12px; font-size: 1.1rem; line-height: 1.4;">
+                    “我生来不是怪物。但如果再有一次，我希望我从未踏进那条河。”
+                </div>
+                <div class="sub" style="color: #ddd; font-size: 1rem;">别让一条鱼，吃掉整条河。</div>
+            </div>
+        </div>
+        <footer style="position: absolute; bottom: 12px; left: 0; right: 0; color: #aaa; text-align: center; z-index: 3;">👈 左右滑动屏幕 ｜ 守护河流，从每一次选择开始</footer>
+    </div>
+</div>
+
+<!-- 全局翻页按钮 -->
+<button id="prevBtn" style="position: fixed; bottom: 20px; left: 20px; z-index: 999; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 40px; padding: 8px 16px; font-size: 1rem; backdrop-filter: blur(4px); cursor: pointer;">◀ 上一页</button>
+<button id="nextBtn" style="position: fixed; bottom: 20px; right: 20px; z-index: 999; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 40px; padding: 8px 16px; font-size: 1rem; backdrop-filter: blur(4px); cursor: pointer;">下一页 ▶</button>
+
+<!-- 背景音乐控制（右上角） -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="背景音乐.MP3" type="audio/mpeg">
+</audio>
+<div id="musicBtn" class="music-control">🔊</div>
+
+<!-- 全局模态框 -->
+<div id="globalModal" class="modal">
+    <div class="modal-content">
+        <div id="modalText">数据内容</div>
+        <button class="close-modal">关闭</button>
+    </div>
+</div>
+
+<script>
+    // 模态框函数
+    const modal = document.getElementById("globalModal");
+    const modalText = document.getElementById("modalText");
+    function showModal(msg) {
+        modalText.innerHTML = msg;
+        modal.style.display = "flex";
+    }
+    document.querySelector(".close-modal").onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; };
+
+    // ========== 第一幕全屏背景切换 ==========
+    const sceneBgs = document.querySelectorAll('.scene-bg');
+    const sceneNarration = document.querySelector('.scene-narration');
+    const sceneDataBadge = document.querySelector('.scene-data-badge');
+    const sceneBtn = document.querySelector('.scene-btn');
+    const dotsFirst = document.querySelectorAll('.first-dot');
+    const scenesContent = [
+        {
+            narration: "“它们被装进恒温箱，跨越海洋，打着‘观赏鱼’的旗号入境。在海关的X光下，我和同伴们安静地蜷缩。”",
+            badge: "🌍 全球观赏鱼贸易年交易额 >300亿美元 | 2000+种鱼类",
+            btnText: "📊 进口数据",
+            btnAction: () => showModal(`
+                <strong>📊 2024年中国观赏鱼进口数据</strong><br><br>
+                进口额约 <strong>2784万美元</strong>（约1.96亿元人民币），同比下降8.9%。<br><br>
+                主要来源国：<strong>印度尼西亚</strong>（占比超50%）、马来西亚、泰国。<br><br>
+                进口品类：以热带海水鱼和高端淡水鱼为主。<br><br>
+                三大集散地：<strong>福建、广东、天津</strong>。
+            `)
+        },
+        {
+            narration: "“玻璃缸里，人们用手指戳着我坚硬的壳，他们说我丑，但却总有人为猎奇买单。”",
+            badge: "🏪 我国约1707万人饲养异宠 | 清道夫曾是热门“清洁工具”",
+            btnText: "📊 我国分布状况",
+            btnAction: () => showModal(`
+                <img src="入侵图.png" style="width:100%; border-radius:16px; margin-bottom:8px;"><br>
+                <div style="text-align:center;">在我国广布于广东、广西等地</div>
+            `)
+        },
+        {
+            narration: "“那双手把我扔进水里的时候，可能只是嫌我长大了、不好看了。但他不知道，这个动作，是我征服战的号角。”",
+            badge: "《中华人民共和国生物安全法》第八十一条：\n违反本法规定，未经批准，擅自引进外来物种的，由县级以上人民政府有关部门根据职责分工，没收引进的外来物种，并处五万元以上二十五万元以下的罚款。\n违反本法规定，未经批准，擅自释放或者丢弃外来物种的，由县级以上人民政府有关部门根据职责分工，责令限期捕回、找回释放或者丢弃的外来物种，处一万元以上五万元以下的罚款。",
+            btnText: "📜 我国首例处罚案",
+            btnAction: () => showModal(`
+                <strong>📜 我国首例清道夫放生处罚案</strong><br><br>
+                2022年9月10日，广西百色男子罗某为祈福，在澄碧河水库放生了6斤外来入侵物种清道夫。经调查，罗某还一同放生了泥鳅与甲鱼，其行为违反了《中华人民共和国生物安全法》相关规定。<br><br>
+                当地农业农村局对罗某作出处罚，要求他在7日内将放生的清道夫全部捞回，并缴纳2.8万元罚款，罗某也已于9月27日缴清罚款。<br><br>
+                后续执法部门会督促罗某开展回捕工作，当地志愿者与捕捞公司也主动提出协助。据专业人士介绍，清道夫原产于南美洲，作为观赏鱼引入后，因被随意放生逐渐在水域泛滥，会对本土生态造成破坏。
+            `)
+        }
+    ];
+    let currentFirstScene = 0;
+    function updateFirstScene(index) {
+        if (index < 0) index = 0;
+        if (index >= sceneBgs.length) index = sceneBgs.length - 1;
+        currentFirstScene = index;
+        sceneBgs.forEach((bg, i) => {
+            bg.style.opacity = i === currentFirstScene ? '1' : '0';
+        });
+        const content = scenesContent[currentFirstScene];
+        sceneNarration.innerText = content.narration;
+        sceneDataBadge.innerText = content.badge;
+        sceneBtn.innerText = content.btnText;
+        sceneBtn.onclick = content.btnAction;
+        dotsFirst.forEach((dot, i) => {
+            dot.style.background = i === currentFirstScene ? '#e0b85b' : '#aaa';
+        });
+    }
+    document.getElementById('firstPrevScene')?.addEventListener('click', () => updateFirstScene(currentFirstScene - 1));
+    document.getElementById('firstNextScene')?.addEventListener('click', () => updateFirstScene(currentFirstScene + 1));
+    dotsFirst.forEach((dot, idx) => dot.addEventListener('click', () => updateFirstScene(idx)));
+    updateFirstScene(0);
+
+    // ========== 第二幕战斗力 ==========
+    const fightTexts = {
+        armor: `<strong>🛡️ 骨板防御 · 无天敌</strong><br><br>
+                清道夫全身覆盖坚硬骨板（盾鳞），如同披着一身铠甲。<br><br>
+                • 防御数据：鸬鹚、鱼鹰等本土捕食者无法咬穿其骨甲，大型游禽误食后常被骨板卡住噎死。<br>
+                • 入侵现状：在我国南方自然水域中几乎没有天敌，捕捞是唯一有效控制手段。`,
+        stomach: `<strong>💨 胃部呼吸 · 极端耐受力</strong><br><br>
+                  除了用鳃呼吸，清道夫的胃壁密布血管，可直接从空气中吸收氧气。<br><br>
+                  • 离水存活：表面湿润状态下可存活6-8小时，完全干燥状态也能撑2-3小时。<br>
+                  • 低温耐受：-28℃环境下长达8小时也不会气绝。`,
+        breed: `<strong>🥚 繁殖力 · 种群爆炸</strong><br><br>
+                清道夫繁殖能力强，且孵化率极高，是本土鱼类的3倍以上。<br><br>
+                • 产卵量：单次产卵300-500颗，高密度水域可达3000颗。<br>
+                • 孵化率：在中国由于没有天敌，孵化率几乎达100%，仅需4天即可孵化。<br>
+                • 护卵行为：雄鱼在河岸钻出1.2-1.5米深洞穴护卵，每天吞食3000-5000粒本土鱼卵。`
+    };
+    document.querySelectorAll("[data-fight]").forEach(btn => {
+        btn.removeEventListener('click', btn._listener);
+        const handler = (e) => {
+            const type = btn.getAttribute("data-fight");
+            showModal(fightTexts[type] || "成年清道夫一天吃掉3000-5000粒鱼卵，用身体在河岸钻出1.2-1.5米深洞穴。");
+        };
+        btn.addEventListener('click', handler);
+        btn._listener = handler;
+    });
+
+    // ========== 第三幕：实地调研证据 ==========
+    document.getElementById('surveyBtn')?.addEventListener('click', () => {
+        showModal(`
+            <strong>📋 实地调研证据（广西隆安县 & 玉林玉州区）</strong><br><br>
+            2022年11月，广西隆安县完成外来水生动物普查，罗非鱼、清道夫遍布当地河流、水库、沟渠等各类水域，入侵形势严峻。<br><br>
+            • 其中两类罗非鱼占比近九成。<br>
+            • 清道夫在右江流域存量大、治理难度高。<br>
+            • 二者会挤压本土生物生存空间，破坏水域生态。<br><br>
+            同期玉林玉州区也出现罗非鱼泛滥问题。
+        `);
+    });
+
+    // ========== 第四幕交互 ==========
+    document.getElementById("pileTrigger")?.addEventListener("click", () => {
+        showModal(`
+            <strong>🔄 无用功循环：捕捞 → 填埋 → 依然泛滥 → 再捕捞……</strong><br><br>
+            📍 广东阳江各大水域清道夫泛滥，当地水库常态化开展捕捞工作，每日捕捞量在几十公斤至500多公斤不等，全年捕捞总量约<strong>2.5万公斤</strong>。<br>
+            💰 捕捞、处置工作还产生持续耗材与人力成本。<br><br>
+            <strong>⚖️ 相关法规处罚</strong><br>
+            • 未经批准擅自引进清道夫这类外来物种，将被没收相关物种，并处<strong>5万至25万元</strong>罚款。<br>
+            • 擅自释放、丢弃外来物种的，会被责令限期捕回，并处<strong>1万至5万元</strong>罚款。<br>
+            • 情节严重涉嫌犯罪的，将被移送司法机关追究刑事责任。
+        `);
+    });
+    document.getElementById("cookBtn")?.addEventListener("click", () => {
+        showModal(`
+            <div style="text-align: center; font-size: 1.2rem; line-height: 1.5;">
+                ⚠️ 禁止食用！！！<br>
+                清道夫肉质粗糙，有泥土腥味，富集重金属。
+            </div>
+        `);
+    });
+
+    // ========== 第五幕对比滑块 ==========
+    const compareSlider = document.querySelector('.compare-slider');
+    const overlayImg = document.querySelector('.compare-img-overlay');
+    const handle = document.querySelector('.slider-handle');
+    const wrapper = document.querySelector('.compare-wrapper');
+    function updateCompare(percent) {
+        if (overlayImg) overlayImg.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+        if (handle && wrapper) {
+            const leftPos = (percent / 100) * wrapper.getBoundingClientRect().width;
+            handle.style.left = `calc(${percent}% - 2px)`;
+        }
+    }
+    if (compareSlider) {
+        compareSlider.addEventListener('input', (e) => updateCompare(parseInt(e.target.value)));
+        updateCompare(parseInt(compareSlider.value));
+    }
+    let isDragging = false;
+    if (handle) {
+        handle.addEventListener('mousedown', (e) => { isDragging = true; e.preventDefault(); });
+        handle.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging || !wrapper) return;
+            const rect = wrapper.getBoundingClientRect();
+            let newX = e.clientX - rect.left;
+            newX = Math.min(Math.max(newX, 0), rect.width);
+            const percent = (newX / rect.width) * 100;
+            if (compareSlider) compareSlider.value = percent;
+            updateCompare(percent);
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging || !wrapper) return;
+            const rect = wrapper.getBoundingClientRect();
+            let newX = e.touches[0].clientX - rect.left;
+            newX = Math.min(Math.max(newX, 0), rect.width);
+            const percent = (newX / rect.width) * 100;
+            if (compareSlider) compareSlider.value = percent;
+            updateCompare(percent);
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('touchend', () => isDragging = false);
+    }
+    const macroData = `
+        <strong>🌊 全国宏观入侵数据</strong><br><br>
+        📌 我国已记录外来入侵物种达<strong>660余种</strong>，是世界上遭受生物入侵危害最严重的国家之一。<br><br>
+        📈 入侵速度：20世纪90年代以来，新入侵我国外来生物<strong>100多种</strong>，平均每年增加<strong>4至5种</strong>。<br><br>
+        🏞️ 流域数据：黄河流域记录外来水生物种<strong>112种</strong>；洞庭湖已被<strong>157种</strong>外来物种入侵（14种鱼类、136种植物等）。<br><br>
+        👤 人为因素：超过<strong>60%</strong>的水生生物入侵事件来自人为弃养或放生；水族贸易和观赏鱼逃逸是主要入侵途径。<br><br>
+        🐾 异宠市场：我国约有<strong>1707万人</strong>饲养异宠，市场规模逼近<strong>百亿元</strong>，“95后”居多。
+    `;
+    document.getElementById('fifthActInfoBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showModal(macroData);
+    });
+    document.getElementById('showMacroDataBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showModal(macroData);
+    });
+    document.getElementById("bigNumTrigger")?.addEventListener("click", () => {
+        showModal(`🌊 我国外来入侵物种660余种，每年新增4-5种。黄河流域112种，洞庭湖157种。超60%人为弃养。`);
+    });
+
+    // ========== 第六幕哨站解锁 ==========
+    let unlockedCount = 0;
+    const fortStatus = {1:false,2:false,3:false,4:false};
+    const fortData = {
+        1: `🚫 不随意放生<br><br>
+            每放生一条外来物种，可能摧毁整段河道生态。<br><br>
+            依据《生物安全法》第八十一条，擅自放生外来物种，罚款 <strong>1—5万元</strong>；情节严重还可追究刑事责任。`,
+        2: `🛑 不购买危险物种<br><br>
+            清道夫已列入<strong>中国外来入侵物种名单（第三批）</strong>，严禁购买、放生、弃养。<br><br>
+            买不得、放不得，清道夫 = 外来入侵物种，违法放生最高罚 <strong>5万元</strong>。`,
+        3: `📢 人人争当生态守护者<br><br>
+            遇到外来入侵物种切勿放任，及时向 <strong>12345 热线</strong>、农业农村部门报告情况。`,
+        4: `🌍 传播即守护<br><br>
+            分享科普知识、生成专属海报，让生态保护理念广泛传播，携手守护水域生态平衡。`
+    };
+    const fortItems = document.querySelectorAll(".fort-item");
+    const fortMsgDiv = document.getElementById("fortMsg");
+    const posterBtn = document.getElementById("generatePosterBtn");
+    const posterResultDiv = document.getElementById("posterResult");
+    function checkAllUnlocked() {
+        if(unlockedCount === 4){
+            fortMsgDiv.innerHTML = "🎉 所有哨站解锁！生成海报传播吧。";
+            posterBtn.style.display = "block";
+        }
+    }
+    fortItems.forEach((item, idx) => {
+        const fid = idx+1;
+        item.addEventListener("click", () => {
+            if(fortStatus[fid]) { showModal(`哨站${fid}已解锁: ${fortData[fid]}`); return; }
+            fortStatus[fid] = true;
+            unlockedCount++;
+            item.classList.remove("locked");
+            item.classList.add("unlocked");
+            showModal(`🔓 哨站${fid}解锁：${fortData[fid]}`);
+            checkAllUnlocked();
+        });
+    });
+    posterBtn?.addEventListener("click", () => {
+        const serial = "ECO" + Math.floor(Math.random()*10000);
+        posterResultDiv.innerHTML = `<div style="background:#0f2f28; padding:10px; border-radius:20px;">🌟 生态哨兵 ${serial}<br>“拒绝随意放生，守护本土河流”<br>🐟 不要让一条鱼吃掉整条河</div>`;
+        showModal(`🎖️ 你的哨兵编号: ${serial}<br>截图分享，接力守护！`);
+    });
+
+    // ========== 全局翻页 ==========
+    const screens = document.querySelectorAll('.screen');
+    const scrollContainer = document.getElementById('scrollContainer');
+    let globalIndex = 0;
+    let scrollTimer = null;
+    function goToScreen(index) {
+        if (index < 0) index = 0;
+        if (index >= screens.length) index = screens.length - 1;
+        if (index === globalIndex) return;
+        globalIndex = index;
+        screens[globalIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        updateGlobalButtons();
+    }
+    function updateGlobalButtons() {
+        const prev = document.getElementById('prevBtn');
+        const next = document.getElementById('nextBtn');
+        if(prev) { prev.disabled = (globalIndex === 0); prev.style.opacity = (globalIndex===0)?'0.4':'1'; }
+        if(next) { next.disabled = (globalIndex === screens.length-1); next.style.opacity = (globalIndex===screens.length-1)?'0.4':'1'; }
+    }
+    scrollContainer.addEventListener('scroll', () => {
+        if(scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const left = scrollContainer.scrollLeft;
+            const w = window.innerWidth;
+            let newIdx = Math.round(left / w);
+            if(newIdx !== globalIndex && newIdx>=0 && newIdx<screens.length) {
+                globalIndex = newIdx;
+                updateGlobalButtons();
+            }
+        }, 100);
+    });
+    document.getElementById('prevBtn')?.addEventListener('click', () => goToScreen(globalIndex - 1));
+    document.getElementById('nextBtn')?.addEventListener('click', () => goToScreen(globalIndex + 1));
+    setTimeout(() => {
+        const left = scrollContainer.scrollLeft;
+        const w = window.innerWidth;
+        let initIdx = Math.round(left / w);
+        if(initIdx !== globalIndex && initIdx>=0 && initIdx<screens.length) {
+            globalIndex = initIdx;
+            updateGlobalButtons();
+        }
+    }, 100);
+    updateGlobalButtons();
+
+    // ========== 背景音乐控制 ==========
+    const musicAudio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+    let isMusicPlaying = false;
+    function playMusic() {
+        musicAudio.play().then(() => {
+            isMusicPlaying = true;
+            musicBtn.textContent = '🔊';
+        }).catch(() => {
+            isMusicPlaying = false;
+            musicBtn.textContent = '🔇';
+        });
+    }
+    function pauseMusic() {
+        musicAudio.pause();
+        isMusicPlaying = false;
+        musicBtn.textContent = '🔇';
+    }
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isMusicPlaying) {
+            pauseMusic();
+        } else {
+            playMusic();
+        }
+    });
+    // 用户首次点击任意位置时尝试自动播放（解决浏览器策略）
+    let hasInteracted = false;
+    const tryAutoPlay = () => {
+        if (!hasInteracted && !isMusicPlaying) {
+            playMusic();
+            hasInteracted = true;
+            document.removeEventListener('click', tryAutoPlay);
+            document.removeEventListener('touchstart', tryAutoPlay);
+        }
+    };
+    document.addEventListener('click', tryAutoPlay);
+    document.addEventListener('touchstart', tryAutoPlay);
+</script>
+</body>
+</html>
