@@ -789,7 +789,8 @@
         musicAudio.play().then(() => {
             isMusicPlaying = true;
             musicBtn.textContent = '🔊';
-        }).catch(() => {
+        }).catch((e) => {
+            console.log(e)
             isMusicPlaying = false;
             musicBtn.textContent = '🔇';
         });
@@ -807,18 +808,6 @@
             playMusic();
         }
     });
-    // 用户首次点击任意位置时尝试自动播放（解决浏览器策略）
-    let hasInteracted = false;
-    const tryAutoPlay = () => {
-        if (!hasInteracted && !isMusicPlaying) {
-            playMusic();
-            hasInteracted = true;
-            document.removeEventListener('click', tryAutoPlay);
-            document.removeEventListener('touchstart', tryAutoPlay);
-        }
-    };
-    document.addEventListener('click', tryAutoPlay);
-    document.addEventListener('touchstart', tryAutoPlay);
 </script>
 </body>
 </html>
